@@ -1,0 +1,198 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>fr.opensagres.xdocreport</groupId>
+	<artifactId>play--xdocreport-module</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<name>XDocReport Play! Module</name>
+	<description>My Artifact Description</description>
+
+
+	<dependencies>
+		<dependency>
+			<groupId>fr.opensagres.xdocreport</groupId>
+			<artifactId>fr.opensagres.xdocreport.core</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.opensagres.xdocreport</groupId>
+			<artifactId>fr.opensagres.xdocreport.document.docx</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.opensagres.xdocreport</groupId>
+			<artifactId>fr.opensagres.xdocreport.document.odt</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.opensagres.xdocreport</groupId>
+			<artifactId>fr.opensagres.xdocreport.template.freemarker</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.opensagres.xdocreport</groupId>
+			<artifactId>fr.opensagres.xdocreport.template.velocity</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.play</groupId>
+			<artifactId>play</artifactId>
+			<version>1.1</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+	<sourceDirectory>src</sourceDirectory>
+    <resources>
+      <resource>
+        <directory>src</directory>
+      </resource>
+    </resources>
+		<plugins>
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+			</plugin>
+			<!-- Keeping this order is very important for packaging phase (copy-dependency
+				must run before antrun) -->
+			 <plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+            			<descriptor>assembly/play-module.xml</descriptor>
+          			</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!--<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>1.6</version>
+					<executions>
+						<execution>
+							<phase>package</phase>
+							<configuration>
+								<target>
+									<property name="maven.project.artifactId" value="${project.artifactId}" />
+									<property name="maven.project.version" value="${project.version}" />
+									<property name="maven.project.play-runtime" value="play-runtime-${play.version}" />
+
+									<property name="play.runtime.path"
+										value="${basedir}/target/dependency/play-${play.version}" />
+									<property name="play.runtime.file"
+										value="${basedir}/target/dependency/${maven.project.play-runtime}.zip" />
+									<property name="play.runtime.unzip.path" value="${basedir}/target/dependency" />
+
+									Check zipped Play! runtime is present. Build fails if not present
+									<available file="${play.runtime.file}" property="play.runtime.present" />
+									<echo message="Is Play! runtime present : ${play.runtime.present}" />
+
+									<fail
+										message="Error : Play! runtime could not be found at : ${play.runtime.file}">
+										<condition>
+											<not>
+												<isset property="play.runtime.present" />
+											</not>
+										</condition>
+									</fail>
+
+									Delete existing Play! runtime
+									<echo message="Deleting any existing unzipped Play! runtime ..." />
+									<delete dir="play.runtime.unzip.path" failonerror="false"
+										verbose="true" />
+
+									Unzip Play! runtime
+									<echo message="Unzipping Play! runtime ..." />
+									<unzip src="${play.runtime.file}" dest="${play.runtime.unzip.path}" />
+									<echo message="Play! runtime unzipped successfully." />
+									<chmod dir="${play.runtime.path}" perm="ugo+x" includes="play" />
+
+									launch play mvn:up to retrieve libs in /lib folder
+									<condition property="playExtension" value=".bat">
+										<and>
+											<os family="windows" />
+										</and>
+									</condition>
+									<condition property="playExtension" value="">
+										<and>
+											<os family="unix" />
+										</and>
+									</condition>
+									<exec
+										executable="${play.runtime.unzip.path}/play-${play.version}/play${playExtension}">
+										<arg value="mvn:update" />
+									</exec>
+
+									Launch Play war command
+									<condition property="playExtension" value=".bat">
+										<and>
+											<os family="windows" />
+										</and>
+									</condition>
+									<condition property="playExtension" value="">
+										<and>
+											<os family="unix" />
+										</and>
+									</condition>
+									<exec
+										executable="${play.runtime.unzip.path}/play-${play.version}/play${playExtension}">
+										<arg value="war" />
+										<arg value="${basedir}" />
+										<arg value="-o" />
+										<arg
+											value="${basedir}/target/${maven.project.artifactId}-${maven.project.version}" />
+										<arg value="zip" />
+									</exec>
+								</target>
+							</configuration>
+							<goals>
+								<goal>run</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin> -->
+
+			<!-- End -->
+		</plugins>
+	</build>
+
+	<repositories>
+		<!-- Repository containing Play! jars. If you have your own repo (ex: Nexus),
+			upload missing libs in third-parties -->
+		<repository>
+			<id>infin-it</id>
+			<url>http://nexus.infin-it.fr/content/groups/public</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<properties>
+		<play.version>1.1</play.version>
+	</properties>
+</project>
