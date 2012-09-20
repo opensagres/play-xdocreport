@@ -50,10 +50,17 @@
 			<version>1.1</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
 	<sourceDirectory>src</sourceDirectory>
+	<testSourceDirectory>test</testSourceDirectory>
     <resources>
       <resource>
         <directory>src</directory>
@@ -85,7 +92,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!--<plugin>
+			<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-antrun-plugin</artifactId>
 					<version>1.6</version>
@@ -104,7 +111,7 @@
 										value="${basedir}/target/dependency/${maven.project.play-runtime}.zip" />
 									<property name="play.runtime.unzip.path" value="${basedir}/target/dependency" />
 
-									Check zipped Play! runtime is present. Build fails if not present
+
 									<available file="${play.runtime.file}" property="play.runtime.present" />
 									<echo message="Is Play! runtime present : ${play.runtime.present}" />
 
@@ -117,18 +124,18 @@
 										</condition>
 									</fail>
 
-									Delete existing Play! runtime
+
 									<echo message="Deleting any existing unzipped Play! runtime ..." />
 									<delete dir="play.runtime.unzip.path" failonerror="false"
 										verbose="true" />
 
-									Unzip Play! runtime
+
 									<echo message="Unzipping Play! runtime ..." />
 									<unzip src="${play.runtime.file}" dest="${play.runtime.unzip.path}" />
 									<echo message="Play! runtime unzipped successfully." />
 									<chmod dir="${play.runtime.path}" perm="ugo+x" includes="play" />
 
-									launch play mvn:up to retrieve libs in /lib folder
+
 									<condition property="playExtension" value=".bat">
 										<and>
 											<os family="windows" />
@@ -144,7 +151,7 @@
 										<arg value="mvn:update" />
 									</exec>
 
-									Launch Play war command
+
 									<condition property="playExtension" value=".bat">
 										<and>
 											<os family="windows" />
@@ -171,7 +178,7 @@
 							</goals>
 						</execution>
 					</executions>
-				</plugin> -->
+				</plugin>
 
 			<!-- End -->
 		</plugins>
