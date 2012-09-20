@@ -97,24 +97,18 @@ public class Application extends Controller {
 	 */
 	public static void demoSimple() {
 		String titre = "Document de démonstration COUCOU";
-
-
 		IXDocReport report = XDocReportRegistry.getRegistry().getReport("demoSimple.odt");
-
 		report.setTemplateEngine(new FreemarkerTemplateEngine());
-		IContext context;
+
 		try {
-			context = report.createContext();
+			IContext context = report.createContext();
 			context.put("titre", titre);
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			report.process(context, out);
 
-			   ByteArrayOutputStream out = new ByteArrayOutputStream();
-			//Result res= generateReport(report, context);
+			InputStream is = new ByteArrayInputStream(out.toByteArray());
 
-			   report.process(context, out);
-
-InputStream is = new ByteArrayInputStream(out.toByteArray());
-
-renderBinary(is,"demoSimple.odt");
+		   renderBinary(is,"demoSimple.odt");
 
 
 		} catch (XDocReportException e) {
